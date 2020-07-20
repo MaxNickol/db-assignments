@@ -43,7 +43,16 @@ async function task_1_1(db) {
  *
  */
 async function task_1_2(db) {
-    throw new Error("Not implemented");
+    let result = await db.query(`
+    SELECT 
+    SUM(o.UnitPrice*o.Quantity) AS 'Order Total Price', 
+    o.OrderID as 'Order Id',
+    ROUND(SUM(o.Discount*o.Quantity)/SUM(o.Quantity*o.UnitPrice)*100, 3) AS 'Total Order Discount, %' 
+    FROM northwind.orderdetails AS o
+    GROUP BY OrderID
+    ORDER BY o.OrderID DESC;
+    `);
+    return result[0];
 }
 
 /**
@@ -54,7 +63,13 @@ async function task_1_2(db) {
  *
  */
 async function task_1_3(db) {
-    throw new Error("Not implemented");
+    let result = await db.query(`
+    SELECT c.CustomerID AS 'CustomerId', c.CompanyName 
+    FROM northwind.customers AS c 
+    WHERE c.Country = 'USA' AND c.Fax IS NULL
+    `);
+
+    return result[0];
 }
 
 /**
@@ -67,7 +82,17 @@ async function task_1_3(db) {
  *
  */
 async function task_1_4(db) {
-    throw new Error("Not implemented");
+    let result = await db.query(`
+    SELECT 
+    ROUND((COUNT(CustomerID)*100)/(SELECT COUNT(CustomerID) FROM northwind.orders), 5) AS '% of all orders', 
+    COUNT(CustomerID) AS 'Total number of Orders',
+    o.CustomerID AS 'Customer Id'
+    FROM northwind.orders AS o 
+    GROUP BY CustomerID
+    ORDER BY \`% of all orders\` DESC, CustomerID ASC
+    `);
+
+    return result[0]; 
 }
 
 /**
@@ -78,7 +103,18 @@ async function task_1_4(db) {
  *
  */
 async function task_1_5(db) {
-    throw new Error("Not implemented");
+    let result = await db.query(`
+    SELECT 
+    ProductID AS 'ProductId', 
+    ProductName, 
+    QuantityPerUnit 
+    FROM northwind.products 
+    WHERE 
+    LEFT (ProductName, 1) BETWEEN 'A' AND 'F'
+    ORDER BY ProductName
+    `)
+    
+    return result[0];
 }
 
 /**
@@ -91,7 +127,17 @@ async function task_1_5(db) {
  *
  */
 async function task_1_6(db) {
-    throw new Error("Not implemented");
+    let result = await db.query(`
+    SELECT 
+    products.ProductName,
+    categories.CategoryName,
+    suppliers.CompanyName AS 'SupplierCompanyName'
+    FROM northwind.products
+    INNER JOIN suppliers ON products.SupplierID = suppliers.SupplierID
+    INNER JOIN categories ON products.CategoryID = categories.CategoryID
+    ORDER BY ProductName, \`SupplierCompanyName\`
+    `)
+    return result[0];
 }
 
 /**
@@ -106,7 +152,15 @@ async function task_1_6(db) {
  *
  */
 async function task_1_7(db) {
-    throw new Error("Not implemented");
+    let result = await db.query(`
+    SELECT 
+    t1.EmployeeID AS 'EmployeeId',
+    CONCAT_WS(' ', t1.FirstName, t1.LastName) AS 'FullName',
+    IFNULL(CONCAT(t2.FirstName, ' ', t2.LastName), "-") AS 'ReportsTo'
+    FROM employees AS t1
+    LEFT JOIN employees AS t2 ON t2.EmployeeID = t1.ReportsTo  
+    `)
+    return result[0];
 }
 
 /**
@@ -118,7 +172,16 @@ async function task_1_7(db) {
  *
  */
 async function task_1_8(db) {
-    throw new Error("Not implemented");
+    let result = await db.query(`
+    SELECT
+    categories.CategoryName,
+    (SELECT 
+    COUNT(products.CategoryID)
+    FROM northwind.products 
+    WHERE categories.CategoryID = products.CategoryID) AS 'TotalNumberOfProducts'
+    FROM northwind.categories
+    `)
+    return result[0];
 }
 
 /**
@@ -130,7 +193,14 @@ async function task_1_8(db) {
  *
  */
 async function task_1_9(db) {
-    throw new Error("Not implemented");
+    let result = await db.query (`
+    SELECT 
+    CustomerID, 
+    ContactName
+    FROM customers
+    WHERE ContactName LIKE 'F%n%'
+    `)
+    return result[0];
 }
 
 /**
@@ -141,7 +211,14 @@ async function task_1_9(db) {
  *
  */
 async function task_1_10(db) {
-    throw new Error("Not implemented");
+    let result = await db.query(`
+    SELECT 
+    ProductID, 
+    ProductName
+    FROM products
+    WHERE Discontinued > 0
+    `)
+    return result[0];
 }
 
 /**
