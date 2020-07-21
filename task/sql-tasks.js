@@ -65,7 +65,7 @@ async function task_1_2(db) {
 async function task_1_3(db) {
     let result = await db.query(`
     SELECT c.CustomerID AS 'CustomerId', c.CompanyName 
-    FROM northwind.customers AS c 
+    FROM customers AS c 
     WHERE c.Country = 'USA' AND c.Fax IS NULL
     `);
 
@@ -84,10 +84,10 @@ async function task_1_3(db) {
 async function task_1_4(db) {
     let result = await db.query(`
     SELECT 
-    ROUND((COUNT(CustomerID)*100)/(SELECT COUNT(CustomerID) FROM northwind.orders), 5) AS '% of all orders', 
+    ROUND((COUNT(CustomerID)*100)/(SELECT COUNT(CustomerID) FROM orders), 5) AS '% of all orders', 
     COUNT(CustomerID) AS 'Total number of Orders',
     o.CustomerID AS 'Customer Id'
-    FROM northwind.orders AS o 
+    FROM orders AS o 
     GROUP BY CustomerID
     ORDER BY \`% of all orders\` DESC, CustomerID ASC
     `);
@@ -108,7 +108,7 @@ async function task_1_5(db) {
     ProductID AS 'ProductId', 
     ProductName, 
     QuantityPerUnit 
-    FROM northwind.products 
+    FROM products 
     WHERE 
     LEFT (ProductName, 1) BETWEEN 'A' AND 'F'
     ORDER BY ProductName
@@ -132,7 +132,7 @@ async function task_1_6(db) {
     products.ProductName,
     categories.CategoryName,
     suppliers.CompanyName AS 'SupplierCompanyName'
-    FROM northwind.products
+    FROM products
     INNER JOIN suppliers ON products.SupplierID = suppliers.SupplierID
     INNER JOIN categories ON products.CategoryID = categories.CategoryID
     ORDER BY ProductName, \`SupplierCompanyName\`
@@ -177,7 +177,7 @@ async function task_1_8(db) {
     categories.CategoryName,
     (SELECT 
     COUNT(products.CategoryID)
-    FROM northwind.products 
+    FROM products 
     WHERE categories.CategoryID = products.CategoryID) AS 'TotalNumberOfProducts'
     FROM northwind.categories
     `)
@@ -231,7 +231,15 @@ async function task_1_10(db) {
  *
  */
 async function task_1_11(db) {
-    throw new Error("Not implemented");
+    let result = await db.query(`
+    SELECT
+    ProductName,
+    UnitPrice
+    FROM products
+    WHERE UnitPrice >= 5 AND UnitPrice <= 15
+    ORDER BY UnitPrice, ProductName
+    `)
+    return result[0];
 }
 
 /**
@@ -244,7 +252,17 @@ async function task_1_11(db) {
  *
  */
 async function task_1_12(db) {
-    throw new Error("Not implemented");
+    let result = await db.query(`
+    SELECT * FROM 
+    (SELECT 
+        ProductName, 
+        UnitPrice 
+        FROM products 
+        ORDER BY UnitPrice DESC LIMIT 20) 
+        AS temp
+    ORDER BY UnitPrice, ProductName
+    `)
+    return result[0];
 }
 
 /**
@@ -255,7 +273,16 @@ async function task_1_12(db) {
  *
  */
 async function task_1_13(db) {
-    throw new Error("Not implemented");
+    let result = await db.query(`
+    SELECT 
+    COUNT(ProductID) AS 'TotalOfCurrentProducts' ,
+    (SELECT 
+        COUNT(Discontinued) 
+        FROM products 
+        WHERE Discontinued > 0) AS 'TotalOfDiscontinuedProducts'
+    FROM products
+    `)
+    return result[0];
 }
 
 /**
@@ -266,7 +293,16 @@ async function task_1_13(db) {
  *
  */
 async function task_1_14(db) {
-    throw new Error("Not implemented");
+    let result = await db.query(`
+    SELECT 
+    ProductName, 
+    UnitsInStock,
+    UnitsOnOrder
+    FROM products
+    WHERE UnitsInStock < UnitsOnOrder
+    `)
+    return result[0];
+    
 }
 
 /**
@@ -277,7 +313,25 @@ async function task_1_14(db) {
  *
  */
 async function task_1_15(db) {
-    throw new Error("Not implemented");
+    let result = await db.query (`
+    SELECT
+    COUNT(IF(MONTHNAME(OrderDate) = 'January', 1, NULL)) AS 'January',
+    COUNT(IF(MONTHNAME(OrderDate) = 'February', 1, NULL)) AS 'February',
+    COUNT(IF(MONTHNAME(OrderDate) = 'March', 1, NULL)) AS 'March',
+    COUNT(IF(MONTHNAME(OrderDate) = 'April', 1, NULL)) AS 'April',
+    COUNT(IF(MONTHNAME(OrderDate) = 'May', 1, NULL)) AS 'May',
+    COUNT(IF(MONTHNAME(OrderDate) = 'June', 1, NULL)) AS 'June',
+    COUNT(IF(MONTHNAME(OrderDate) = 'July', 1, NULL)) AS 'July',
+    COUNT(IF(MONTHNAME(OrderDate) = 'August', 1, NULL)) AS 'August',
+    COUNT(IF(MONTHNAME(OrderDate) = 'September', 1, NULL)) AS 'September',
+    COUNT(IF(MONTHNAME(OrderDate) = 'October', 1, NULL)) AS 'October',
+    COUNT(IF(MONTHNAME(OrderDate) = 'November', 1, NULL)) AS 'November',
+    COUNT(IF(MONTHNAME(OrderDate) = 'December', 1, NULL)) AS 'December'
+    FROM orders
+    WHERE YEAR(OrderDate) > 1996 AND YEAR(OrderDate) < 1998
+    `)
+    return result[0];
+
 }
 
 /**
@@ -288,7 +342,15 @@ async function task_1_15(db) {
  *
  */
 async function task_1_16(db) {
-    throw new Error("Not implemented");
+    let result = await db.query(`
+    SELECT 
+    OrderID,
+    CustomerID,
+    ShipCountry
+    FROM orders
+    WHERE ShipPostalCode IS NOT NULL
+    `)
+    return result[0];
 }
 
 /**
