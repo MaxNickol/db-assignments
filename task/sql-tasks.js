@@ -363,7 +363,16 @@ async function task_1_16(db) {
  *
  */
 async function task_1_17(db) {
-    throw new Error("Not implemented");
+    let result = await db.query(`
+    SELECT 
+    categories.CategoryName,
+    AVG(products.UnitPrice) AS 'AvgPrice'
+    FROM categories
+    INNER JOIN products ON categories.CategoryID = products.CategoryID
+    GROUP BY categories.CategoryName
+    ORDER BY \`AvgPrice\` DESC, CategoryName
+    `)
+    return result[0];
 }
 
 /**
@@ -375,7 +384,16 @@ async function task_1_17(db) {
  *
  */
 async function task_1_18(db) {
-    throw new Error("Not implemented");
+    let result = await db.query(`
+    SELECT 
+    DATE_FORMAT(OrderDate, '%Y-%m-%d %T') AS 'OrderDate',
+    COUNT(OrderID) AS 'Total Number of Orders'
+    FROM orders
+    WHERE YEAR(OrderDate) = 1998
+    GROUP BY OrderDate
+    ORDER BY OrderDate
+    `)
+    return result[0];
 }
 
 /**
@@ -387,7 +405,19 @@ async function task_1_18(db) {
  *
  */
 async function task_1_19(db) {
-    throw new Error("Not implemented");
+    let result = await db.query (`
+    SELECT 
+    orders.CustomerID,
+    customers.CompanyName,
+    SUM(orderdetails.UnitPrice*orderdetails.Quantity) AS 'TotalOrdersAmount, $'
+    FROM orderdetails
+    RIGHT JOIN orders ON orderdetails.OrderID = orders.OrderID
+    RIGHT JOIN customers ON orders.CustomerID = customers.CustomerID
+    GROUP BY customers.CompanyName
+    HAVING \`TotalOrdersAmount, $\` > 10000
+    ORDER BY \`TotalOrdersAmount, $\` DESC, orders.CustomerID
+    `)
+    return result[0];
 }
 
 /**
@@ -399,7 +429,18 @@ async function task_1_19(db) {
  *
  */
 async function task_1_20(db) {
-    throw new Error("Not implemented");
+    let result = await db.query(`
+    SELECT 
+    orders.EmployeeID,
+    CONCAT(employees.FirstName, ' ', employees.LastName) AS 'Employee Full Name',
+    SUM(orderdetails.UnitPrice*orderdetails.Quantity) AS 'Amount, $'
+    FROM orderdetails
+    RIGHT JOIN orders ON orders.OrderID = orderdetails.OrderID
+    RIGHT JOIN employees ON orders.EmployeeID = employees.EmployeeID
+    GROUP BY \`Employee Full Name\`
+    ORDER BY \`Amount, $\` DESC LIMIT 1
+    `)
+    return result[0];
 }
 
 /**
@@ -409,7 +450,17 @@ async function task_1_20(db) {
  * @return {array}
  */
 async function task_1_21(db) {
-    throw new Error("Not implemented");
+    let result = await db.query(`
+    SELECT
+    orderdetails.OrderID, 
+    SUM(orderdetails.UnitPrice*orderdetails.Quantity) AS 'Maximum Purchase Amount, $'
+    FROM orderdetails
+    RIGHT JOIN orders ON orders.OrderID = orderdetails.OrderID
+    GROUP BY orderdetails.OrderID
+    ORDER BY \`Maximum Purchase Amount, $\` DESC LIMIT 1
+
+    `)
+    return result[0];
 }
 
 /**
