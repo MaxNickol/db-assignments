@@ -407,13 +407,13 @@ async function task_1_18(db) {
 async function task_1_19(db) {
     let result = await db.query (`
     SELECT 
-    Orders.CustomerID,
+    Orders.CustomerID AS "CustomerID",
     Customers.CompanyName,
-    SUM(OrderDetails.UnitPrice*OrderDetails.Quantity) AS 'TotalOrdersAmount, $'
+    SUM(UnitPrice*Quantity) AS 'TotalOrdersAmount, $'
     FROM OrderDetails
     INNER JOIN Orders ON OrderDetails.OrderID = Orders.OrderID
     INNER JOIN Customers ON Orders.CustomerID = Customers.CustomerID
-    GROUP BY CompanyName
+    GROUP BY Orders.CustomerID
     HAVING \`TotalOrdersAmount, $\` > 10000
     ORDER BY \`TotalOrdersAmount, $\` DESC, Orders.CustomerID
     `)
@@ -436,8 +436,8 @@ async function task_1_20(db) {
     SUM(OrderDetails.UnitPrice*OrderDetails.Quantity) AS 'Amount, $'
     FROM OrderDetails
     INNER JOIN Orders ON Orders.OrderID = OrderDetails.OrderID
-    INNER JOIN Employees ON Orders.EmployeeID = Employees.EmployeeID
-    GROUP BY \`Employee Full Name\`
+    INNER JOIN Employees ON Employees.EmployeeID = Orders.EmployeeID 
+    GROUP BY Orders.EmployeeID
     ORDER BY \`Amount, $\` DESC LIMIT 1
     `)
     return result[0];
