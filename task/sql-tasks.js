@@ -84,10 +84,10 @@ async function task_1_3(db) {
 async function task_1_4(db) {
     let result = await db.query(`
     SELECT 
-    ROUND((COUNT(CustomerID)*100)/(SELECT COUNT(CustomerID) FROM orders), 5) AS '% of all orders', 
+    CustomerID AS 'Customer Id',
     COUNT(CustomerID) AS 'Total number of Orders',
-    o.CustomerID AS 'Customer Id'
-    FROM Orders AS o 
+    ROUND((COUNT(CustomerID)*100)/(SELECT COUNT(CustomerID) FROM orders), 5) AS '% of all orders'
+    FROM Orders 
     GROUP BY CustomerID
     ORDER BY \`% of all orders\` DESC, CustomerID ASC
     `);
@@ -298,7 +298,7 @@ async function task_1_14(db) {
     ProductName, 
     UnitsInStock,
     UnitsOnOrder
-    FROM products
+    FROM Products
     WHERE UnitsInStock < UnitsOnOrder
     `)
     return result[0];
@@ -366,7 +366,7 @@ async function task_1_17(db) {
     let result = await db.query(`
     SELECT 
     Categories.CategoryName,
-    AVG(products.UnitPrice) AS 'AvgPrice'
+    AVG(Products.UnitPrice) AS 'AvgPrice'
     FROM Categories
     INNER JOIN Products ON Categories.CategoryID = Products.CategoryID
     GROUP BY Categories.CategoryName
@@ -413,7 +413,7 @@ async function task_1_19(db) {
     FROM OrderDetails
     RIGHT JOIN Orders ON OrderDetails.OrderID = Orders.OrderID
     RIGHT JOIN Customers ON Orders.CustomerID = Customers.CustomerID
-    GROUP BY Customers.CompanyName
+    GROUP BY CompanyName
     HAVING \`TotalOrdersAmount, $\` > 10000
     ORDER BY \`TotalOrdersAmount, $\` DESC, Orders.CustomerID
     `)
@@ -481,7 +481,7 @@ async function task_1_22(db) {
     SELECT 
     Customers.CompanyName,
     Customers.CustomerID,
-    MAX(orderdetails.UnitPrice) AS 'PricePerItem'
+    MAX(OrderDetails.UnitPrice) AS 'PricePerItem'
     FROM Customers
     INNER JOIN Orders ON Customers.CustomerID = Orders.CustomerID 
     INNER JOIN OrderDetails ON Orders.OrderID = OrderDetails.OrderID
