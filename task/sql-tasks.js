@@ -411,8 +411,8 @@ async function task_1_19(db) {
     Customers.CompanyName,
     SUM(OrderDetails.UnitPrice*OrderDetails.Quantity) AS 'TotalOrdersAmount, $'
     FROM OrderDetails
-    RIGHT JOIN Orders ON OrderDetails.OrderID = Orders.OrderID
-    RIGHT JOIN Customers ON Orders.CustomerID = Customers.CustomerID
+    INNER JOIN Orders ON OrderDetails.OrderID = Orders.OrderID
+    INNER JOIN Customers ON Orders.CustomerID = Customers.CustomerID
     GROUP BY CompanyName
     HAVING \`TotalOrdersAmount, $\` > 10000
     ORDER BY \`TotalOrdersAmount, $\` DESC, Orders.CustomerID
@@ -435,8 +435,8 @@ async function task_1_20(db) {
     CONCAT(Employees.FirstName, ' ', Employees.LastName) AS 'Employee Full Name',
     SUM(OrderDetails.UnitPrice*OrderDetails.Quantity) AS 'Amount, $'
     FROM OrderDetails
-    RIGHT JOIN Orders ON Orders.OrderID = OrderDetails.OrderID
-    RIGHT JOIN Employees ON Orders.EmployeeID = Employees.EmployeeID
+    INNER JOIN Orders ON Orders.OrderID = OrderDetails.OrderID
+    INNER JOIN Employees ON Orders.EmployeeID = Employees.EmployeeID
     GROUP BY \`Employee Full Name\`
     ORDER BY \`Amount, $\` DESC LIMIT 1
     `)
